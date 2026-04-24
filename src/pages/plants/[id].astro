@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import { plants } from "../../data/plants";
+import { plants, MONTHS, MONTH_LABELS } from "../../data/plants";
+import type { Month } from "../../data/plants";
 
 export function getStaticPaths() {
 	return plants.map((plant) => ({
@@ -10,29 +11,250 @@ export function getStaticPaths() {
 }
 
 const { plant } = Astro.props;
+
+function getCellClass(month: Month): string {
+	const s = plant.schedule;
+	if (s.harvest.includes(month)) return "harvest";
+	if (s.transplant.includes(month)) return "transplant";
+	if (s.sowOutdoors.includes(month)) return "sow-outdoors";
+	if (s.sowIndoors.includes(month)) return "sow-indoors";
+	return "empty";
+}
+
+function getCellLabel(month: Month): string {
+	const s = plant.schedule;
+	if (s.harvest.includes(month)) return "Harvest";
+	if (s.transplant.includes(month)) return "Transplant";
+	if (s.sowOutdoors.includes(month)) return "Sow Outdoors";
+	if (s.sowIndoors.includes(month)) return "Sow Indoors";
+	return "";
+}
 ---
 
 <BaseLayout title={plant.name}>
 	<main>
-		<h1>{plant.name}</h1>
-		<p><em>{plant.scientificName}</em></p>
-		<p>Family: {plant.family}</p>
-		<p>{plant.description}</p>
-		<a href="/plants">Back to plant database</a>
+		<section class="header">
+			<h1>{plant.name}</h1>
+			<p class="scientific"><em>{plant.scientificName}</em></p>
+			<p class="family">Family: {plant.family} &middot; Genus: {plant.genus}</p>
+		</section>
+
+		<section class="details">
+			<img src={plant.imageUrl} alt={plant.name} />
+			<p class="description">{plant.description}</p>
+		</section>
+
+		<section class="schedule-section">
+			<h2>Growing Schedule <span class="zone-badge">Zone 7b/8a</span></h2>
+
+			<div class="legend">
+				<span class="legend-item"><span class="swatch sow-indoors"></span> Sow Indoors</span>
+				<span class="legend-item"><span class="swatch sow-outdoors"></span> Sow Outdoors</span>
+				<span class="legend-item"><span class="swatch transplant"></span> Transplant</span>
+				<span class="legend-item"><span class="swatch harvest"></span> Harvest</span>
+			</div>
+
+			<div class="month-grid">
+				{MONTHS.map((m) => {
+					const cellClass = getCellClass(m);
+					const label = getCellLabel(m);
+					return (
+						<div class:list={["month-cell", cellClass]}>
+							<span class="month-label">{MONTH_LABELS[m]}</span>
+							{label && <span class="cell-label">{label}</span>}
+						</div>
+					);
+				})}
+			</div>
+		</section>
+
+		<a href="/plants" class="back-link">Back to plant database</a>
+		<a href="/schedule" class="back-link">View full schedule</a>
 	</main>
 </BaseLayout>
 
 <style>
 	main {
 		padding: 2rem;
+		max-width: 800px;
+		margin: 0 auto;
 	}
 
-	a {
+	.header h1 {
+		font-size: 2.2rem;
+		margin: 0 0 0.3rem;
+		color: #a7f3d0;
+	}
+
+	.scientific {
+		color: #9ca3af;
+		font-size: 1.1rem;
+		margin: 0 0 0.3rem;
+	}
+
+	.family {
+		color: #6b7280;
+		font-size: 0.9rem;
+		margin: 0;
+	}
+
+	.details {
+		display: flex;
+		gap: 1.5rem;
+		align-items: flex-start;
+		margin: 2rem 0;
+		padding: 1.5rem;
+		background: rgba(255, 255, 255, 0.03);
+		border-radius: 8px;
+		border: 1px solid #1e2d1e;
+	}
+
+	.details img {
+		width: 180px;
+		height: 180px;
+		object-fit: cover;
+		border-radius: 6px;
+		flex-shrink: 0;
+	}
+
+	.description {
+		color: #d1d5db;
+		line-height: 1.6;
+		margin: 0;
+	}
+
+	.schedule-section {
+		margin: 2rem 0;
+	}
+
+	.schedule-section h2 {
+		font-size: 1.3rem;
+		color: #e0e0e0;
+		margin: 0 0 1rem;
+		display: flex;
+		align-items: center;
+		gap: 0.7rem;
+	}
+
+	.zone-badge {
+		font-size: 0.7rem;
+		background: rgba(74, 222, 128, 0.15);
+		color: #6ee7b7;
+		padding: 0.2rem 0.5rem;
+		border-radius: 4px;
+		font-weight: 500;
+	}
+
+	.legend {
+		display: flex;
+		gap: 1rem;
+		margin-bottom: 1rem;
+		flex-wrap: wrap;
+	}
+
+	.legend-item {
+		display: flex;
+		align-items: center;
+		gap: 0.35rem;
+		font-size: 0.78rem;
+		color: #9ca3af;
+	}
+
+	.swatch {
+		width: 12px;
+		height: 12px;
+		border-radius: 2px;
+	}
+
+	.swatch.sow-indoors {
+		background: #2563eb;
+	}
+	.swatch.sow-outdoors {
+		background: #16a34a;
+	}
+	.swatch.transplant {
+		background: #d97706;
+	}
+	.swatch.harvest {
+		background: #dc2626;
+	}
+
+	.month-grid {
+		display: grid;
+		grid-template-columns: repeat(12, 1fr);
+		gap: 4px;
+	}
+
+	.month-cell {
+		padding: 0.6rem 0.3rem;
+		border-radius: 5px;
+		text-align: center;
+		min-height: 60px;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: 0.25rem;
+		transition: transform 0.12s ease;
+	}
+
+	.month-cell:hover {
+		transform: scale(1.08);
+	}
+
+	.month-cell.empty {
+		background: rgba(255, 255, 255, 0.03);
+	}
+
+	.month-cell.sow-indoors {
+		background: #2563eb;
+	}
+	.month-cell.sow-outdoors {
+		background: #16a34a;
+	}
+	.month-cell.transplant {
+		background: #d97706;
+	}
+	.month-cell.harvest {
+		background: #dc2626;
+	}
+
+	.month-label {
+		font-size: 0.75rem;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+	}
+
+	.cell-label {
+		font-size: 0.6rem;
+		opacity: 0.85;
+	}
+
+	.back-link {
+		display: inline-block;
 		color: #4ade80;
 		text-decoration: none;
+		margin-right: 1rem;
+		font-size: 0.9rem;
 	}
 
-	a:hover {
+	.back-link:hover {
 		text-decoration: underline;
+	}
+
+	@media (max-width: 600px) {
+		.details {
+			flex-direction: column;
+		}
+
+		.details img {
+			width: 100%;
+			height: auto;
+		}
+
+		.month-grid {
+			grid-template-columns: repeat(6, 1fr);
+		}
 	}
 </style>

@@ -1,0 +1,267 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { plants, MONTHS, MONTH_LABELS } from "../data/plants";
+import type { Month } from "../data/plants";
+
+function getCellClass(month: Month, plant: (typeof plants)[number]): string {
+	const s = plant.schedule;
+	if (s.harvest.includes(month)) return "harvest";
+	if (s.transplant.includes(month)) return "transplant";
+	if (s.sowOutdoors.includes(month)) return "sow-outdoors";
+	if (s.sowIndoors.includes(month)) return "sow-indoors";
+	return "empty";
+}
+---
+
+<BaseLayout title="Growing Schedule - Kozani, Greece">
+	<main>
+		<section class="hero">
+			<div class="hero-content">
+				<h1>Growing Schedule</h1>
+				<p class="subtitle">Kozani, Greece &middot; Zone 7b/8a</p>
+				<p class="meta">Continental climate &middot; Elevation 710m &middot; Last frost mid-April</p>
+			</div>
+		</section>
+
+		<section class="legend">
+			<div class="legend-items">
+				<span class="legend-item"><span class="swatch sow-indoors"></span> Sow Indoors</span>
+				<span class="legend-item"><span class="swatch sow-outdoors"></span> Sow Outdoors</span>
+				<span class="legend-item"><span class="swatch transplant"></span> Transplant</span>
+				<span class="legend-item"><span class="swatch harvest"></span> Harvest</span>
+			</div>
+		</section>
+
+		<section class="calendar-wrapper">
+			<div class="calendar-scroll">
+				<table class="calendar">
+					<thead>
+						<tr>
+							<th class="plant-name-col">Vegetable</th>
+							{MONTHS.map((m) => <th class="month-col">{MONTH_LABELS[m]}</th>)}
+						</tr>
+					</thead>
+					<tbody>
+						{plants.map((plant) => (
+							<tr>
+								<td class="plant-name">
+									<a href={`/plants/${plant.id}`}>{plant.name}</a>
+								</td>
+								{MONTHS.map((m) => {
+									const cellClass = getCellClass(m, plant);
+									return <td class={`cell ${cellClass}`} />;
+								})}
+							</tr>
+						))}
+					</tbody>
+				</table>
+			</div>
+		</section>
+	</main>
+</BaseLayout>
+
+<style>
+	@import url("https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600&display=swap");
+
+	main {
+		padding: 0 2rem 4rem;
+	}
+
+	.hero {
+		padding: 3rem 0 1.5rem;
+		border-bottom: 1px solid #1e2d1e;
+		margin-bottom: 1.5rem;
+	}
+
+	.hero h1 {
+		font-family: "DM Serif Display", serif;
+		font-size: 2.8rem;
+		margin: 0;
+		color: #a7f3d0;
+		letter-spacing: -0.02em;
+	}
+
+	.subtitle {
+		font-family: "DM Sans", sans-serif;
+		font-size: 1.15rem;
+		color: #6ee7b7;
+		margin: 0.5rem 0 0.15rem;
+		font-weight: 500;
+	}
+
+	.meta {
+		font-family: "DM Sans", sans-serif;
+		font-size: 0.85rem;
+		color: #5a7a5a;
+		margin: 0;
+	}
+
+	.legend {
+		margin-bottom: 2rem;
+	}
+
+	.legend-items {
+		display: flex;
+		gap: 1.5rem;
+		flex-wrap: wrap;
+	}
+
+	.legend-item {
+		display: flex;
+		align-items: center;
+		gap: 0.45rem;
+		font-family: "DM Sans", sans-serif;
+		font-size: 0.82rem;
+		color: #9ca3af;
+		font-weight: 500;
+	}
+
+	.swatch {
+		width: 14px;
+		height: 14px;
+		border-radius: 3px;
+		display: inline-block;
+	}
+
+	.swatch.sow-indoors {
+		background: #2563eb;
+	}
+	.swatch.sow-outdoors {
+		background: #16a34a;
+	}
+	.swatch.transplant {
+		background: #d97706;
+	}
+	.swatch.harvest {
+		background: #dc2626;
+	}
+
+	.calendar-wrapper {
+		overflow-x: auto;
+	}
+
+	.calendar-scroll {
+		min-width: 900px;
+	}
+
+	.calendar {
+		width: 100%;
+		border-collapse: separate;
+		border-spacing: 3px;
+		font-family: "DM Sans", sans-serif;
+	}
+
+	thead th {
+		font-size: 0.75rem;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+		color: #6b7280;
+		padding: 0.5rem 0;
+		text-align: center;
+	}
+
+	th.plant-name-col {
+		text-align: left;
+		padding-left: 0.5rem;
+		width: 140px;
+		min-width: 140px;
+	}
+
+	th.month-col {
+		width: 64px;
+	}
+
+	tbody tr {
+		transition: background 0.15s ease;
+	}
+
+	tbody tr:hover {
+		background: rgba(167, 243, 208, 0.04);
+	}
+
+	.plant-name {
+		padding: 0.6rem 0.5rem;
+		font-weight: 500;
+		font-size: 0.9rem;
+		white-space: nowrap;
+	}
+
+	.plant-name a {
+		color: #d1d5db;
+		text-decoration: none;
+		transition: color 0.15s ease;
+	}
+
+	.plant-name a:hover {
+		color: #6ee7b7;
+		text-decoration: underline;
+	}
+
+	.cell {
+		height: 38px;
+		min-width: 60px;
+		border-radius: 4px;
+		transition: transform 0.12s ease, box-shadow 0.12s ease;
+		position: relative;
+	}
+
+	.cell:hover {
+		transform: scale(1.15);
+		z-index: 2;
+		box-shadow: 0 0 12px rgba(0, 0, 0, 0.4);
+	}
+
+	.cell.empty {
+		background: rgba(255, 255, 255, 0.03);
+	}
+
+	.cell.sow-indoors {
+		background: #2563eb;
+		box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.2);
+	}
+
+	.cell.sow-outdoors {
+		background: #16a34a;
+		box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.2);
+	}
+
+	.cell.transplant {
+		background: #d97706;
+		box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.2);
+	}
+
+	.cell.harvest {
+		background: #dc2626;
+		box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.2);
+		animation: pulse-glow 2.5s ease-in-out infinite;
+	}
+
+	@keyframes pulse-glow {
+		0%,
+		100% {
+			box-shadow:
+				inset 0 -2px 0 rgba(0, 0, 0, 0.2),
+				0 0 0 rgba(220, 38, 38, 0);
+		}
+		50% {
+			box-shadow:
+				inset 0 -2px 0 rgba(0, 0, 0, 0.2),
+				0 0 8px rgba(220, 38, 38, 0.3);
+		}
+	}
+
+	@media (max-width: 768px) {
+		main {
+			padding: 0 1rem 3rem;
+		}
+
+		.hero h1 {
+			font-size: 2rem;
+		}
+
+		.legend-items {
+			gap: 0.8rem;
+		}
+	}
+</style>
