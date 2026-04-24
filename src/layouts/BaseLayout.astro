@@ -1,0 +1,50 @@
+---
+interface Props {
+	title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<title>{title}</title>
+	</head>
+	<body>
+		<nav>
+			<a href="/">Greenhouse</a>
+			<a href="/plants">Plant Database</a>
+		</nav>
+		<slot />
+	</body>
+</html>
+
+<style>
+	nav {
+		display: flex;
+		gap: 1rem;
+		padding: 1rem 2rem;
+		background: #1a1a2e;
+	}
+
+	nav a {
+		color: #e0e0e0;
+		text-decoration: none;
+		font-family: sans-serif;
+	}
+
+	nav a:hover {
+		color: #4ade80;
+	}
+
+	body {
+		margin: 0;
+		background: #0f0f23;
+		color: #e0e0e0;
+		font-family: sans-serif;
+	}
+</style>

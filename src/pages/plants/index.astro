@@ -1,0 +1,45 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { plants } from "../../data/plants";
+---
+
+<BaseLayout title="Plant Database">
+	<main>
+		<h1>Plant Database</h1>
+		<p>Plant data will be displayed here.</p>
+		{plants.length === 0 && <p><em>No plants loaded yet.</em></p>}
+		<ul>
+			{plants.map((plant) => (
+				<li>
+					<a href={`/plants/${plant.id}`}>
+						{plant.name} <em>({plant.scientificName})</em>
+					</a>
+				</li>
+			))}
+		</ul>
+	</main>
+</BaseLayout>
+
+<style>
+	main {
+		padding: 2rem;
+	}
+
+	ul {
+		list-style: none;
+		padding: 0;
+	}
+
+	li {
+		padding: 0.5rem 0;
+	}
+
+	a {
+		color: #4ade80;
+		text-decoration: none;
+	}
+
+	a:hover {
+		text-decoration: underline;
+	}
+</style>

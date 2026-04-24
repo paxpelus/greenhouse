@@ -1,0 +1,28 @@
+---
+---
+
+<canvas id="greenhouse-canvas" width="800" height="600"></canvas>
+
+<style>
+	#greenhouse-canvas {
+		display: block;
+		margin: 2rem auto;
+		border: 1px solid #333;
+		background: #111;
+	}
+</style>
+
+<script>
+	const canvas = document.getElementById("greenhouse-canvas") as HTMLCanvasElement;
+	const ctx = canvas.getContext("2d")!;
+
+	ctx.fillStyle = "#1a3a1a";
+	ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+	ctx.strokeStyle = "#4ade80";
+	ctx.lineWidth = 2;
+	ctx.font = "20px sans-serif";
+	ctx.fillStyle = "#4ade80";
+	ctx.textAlign = "center";
+	ctx.fillText("Greenhouse canvas - coming soon", canvas.width / 2, canvas.height / 2);
+</script>

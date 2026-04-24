@@ -1,0 +1,38 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { plants } from "../../data/plants";
+
+export function getStaticPaths() {
+	return plants.map((plant) => ({
+		params: { id: plant.id },
+		props: { plant },
+	}));
+}
+
+const { plant } = Astro.props;
+---
+
+<BaseLayout title={plant.name}>
+	<main>
+		<h1>{plant.name}</h1>
+		<p><em>{plant.scientificName}</em></p>
+		<p>Family: {plant.family}</p>
+		<p>{plant.description}</p>
+		<a href="/plants">Back to plant database</a>
+	</main>
+</BaseLayout>
+
+<style>
+	main {
+		padding: 2rem;
+	}
+
+	a {
+		color: #4ade80;
+		text-decoration: none;
+	}
+
+	a:hover {
+		text-decoration: underline;
+	}
+</style>
