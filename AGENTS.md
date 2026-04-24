@@ -114,6 +114,29 @@ public/              # Static assets (favicons, etc.)
 
 Add an entry to the `plants` array in `src/data/plants.ts` with all required fields: `id`, `name`, `scientificName`, `family`, `genus`, `year`, `author`, `imageUrl`, `description`, and `schedule` (with `sowIndoors`, `sowOutdoors`, `transplant`, `harvest` arrays of `Month` values). No other files need changes — the schedule and plant pages render automatically.
 
+### Growing Schedule Data Source
+
+Growing schedules are derived from [Gardenate](https://www.gardenate.com) planting calendars, adapted for Kozani, Greece (USDA Zone 7b/8a, Mediterranean climate).
+
+**Methodology:**
+- Gardenate's "Australia - temperate" zone data was used as the base, since it has a similar climate pattern (warm dry summers, mild wet winters).
+- A +6 month hemisphere correction was applied (southern hemisphere months → northern hemisphere months) to convert Australian seasons to Greek seasons.
+- Gardenate zone IDs: USA Zone 8a = `13`, Zone 7b = `114`. The site requires JavaScript for zone switching, so the Australia-temperate default (zone `2`) was fetched and hemisphere-corrected.
+- Harvest months are estimated from Gardenate's "Harvest in X-Y weeks" info plus the transplant/sowing dates.
+- Schedules were cross-checked against the existing manually-curated data and adjusted where the Gardenate data suggested broader planting windows.
+
+**Key differences from original data:**
+- Lettuce: Added autumn sowing months (aug, sep indoor; autumn transplant).
+- Carrot: Added autumn sowing (aug, sep) for extended harvest.
+- Zucchini: Added "mar" to sowIndoors (earlier indoor start).
+- Basil: Added "apr" to sowIndoors (extended indoor sowing window).
+
+**To update a plant's schedule from Gardenate:**
+1. Visit `https://www.gardenate.com/plant/{plant-slug}?zone=13` (zone 13 = USA Zone 8a).
+2. Read the S (sow indoors), T (transplant), P (sow outdoors) month markers.
+3. Harvest timing is listed as "Harvest in X-Y weeks" — calculate harvest months from transplant date + weeks.
+4. Update the `schedule` object in `src/data/plants.ts`.
+
 ### Adding a New Page
 
 1. Create `.astro` file in `src/pages/` following file-based routing.

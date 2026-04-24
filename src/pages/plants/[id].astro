@@ -41,7 +41,28 @@ function getCellLabel(month: Month): string {
 
 		<section class="details">
 			<img src={plant.imageUrl} alt={plant.name} />
-			<p class="description">{plant.description}</p>
+			<div class="details-text">
+				<p class="description">{plant.description}</p>
+			</div>
+		</section>
+
+		<section class="info-grid">
+			<div class="info-card">
+				<h3>Soil Temperature</h3>
+				<p>{plant.soilTemp.min}&deg;C &ndash; {plant.soilTemp.max}&deg;C</p>
+			</div>
+			<div class="info-card">
+				<h3>Spacing</h3>
+				<p>{plant.spacing.min} &ndash; {plant.spacing.max} cm</p>
+			</div>
+			<div class="info-card">
+				<h3>Harvest</h3>
+				<p>{plant.harvestWeeks.min}&ndash;{plant.harvestWeeks.max} weeks</p>
+			</div>
+			<div class="info-card">
+				<h3>Sowing</h3>
+				<p>{plant.sowingMethod}</p>
+			</div>
 		</section>
 
 		<section class="schedule-section">
@@ -68,8 +89,48 @@ function getCellLabel(month: Month): string {
 			</div>
 		</section>
 
-		<a href="/plants" class="back-link">Back to plant database</a>
-		<a href="/schedule" class="back-link">View full schedule</a>
+		{plant.companions.length > 0 && (
+			<section class="companions-section">
+				<h2>Companions</h2>
+				<div class="tag-list">
+					{plant.companions.map((c) => (
+						<span class="tag companion">{c}</span>
+					))}
+				</div>
+			</section>
+		)}
+
+		{plant.incompatible.length > 0 && (
+			<section class="incompatible-section">
+				<h2>Avoid Growing Near</h2>
+				<div class="tag-list">
+					{plant.incompatible.map((i) => (
+						<span class="tag avoid">{i}</span>
+					))}
+				</div>
+			</section>
+		)}
+
+		<section class="growing-notes">
+			<h2>Growing Notes</h2>
+			<div class="notes-content" set:html={plant.gardenateDescription.split('\n').map(p => `<p>${p}</p>`).join('')} />
+		</section>
+
+		<section class="culinary">
+			<h2>Culinary Hints</h2>
+			<p>{plant.culinaryHints}</p>
+		</section>
+
+		<div class="source-link">
+			<a href={plant.gardenateUrl} target="_blank" rel="noopener noreferrer">
+				View on Gardenate
+			</a>
+		</div>
+
+		<div class="nav-links">
+			<a href="/plants" class="back-link">Back to plant database</a>
+			<a href="/schedule" class="back-link">View full schedule</a>
+		</div>
 	</main>
 </BaseLayout>
 
@@ -117,10 +178,43 @@ function getCellLabel(month: Month): string {
 		flex-shrink: 0;
 	}
 
+	.details-text {
+		flex: 1;
+	}
+
 	.description {
 		color: #d1d5db;
 		line-height: 1.6;
 		margin: 0;
+	}
+
+	.info-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+		gap: 0.75rem;
+		margin: 1.5rem 0;
+	}
+
+	.info-card {
+		padding: 1rem;
+		background: rgba(255, 255, 255, 0.03);
+		border-radius: 6px;
+		border: 1px solid #1e2d1e;
+	}
+
+	.info-card h3 {
+		font-size: 0.75rem;
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+		color: #6ee7b7;
+		margin: 0 0 0.4rem;
+		font-weight: 600;
+	}
+
+	.info-card p {
+		color: #d1d5db;
+		margin: 0;
+		font-size: 0.9rem;
 	}
 
 	.schedule-section {
@@ -229,6 +323,85 @@ function getCellLabel(month: Month): string {
 	.cell-label {
 		font-size: 0.6rem;
 		opacity: 0.85;
+	}
+
+	.companions-section,
+	.incompatible-section {
+		margin: 1.5rem 0;
+	}
+
+	.companions-section h2,
+	.incompatible-section h2 {
+		font-size: 1.1rem;
+		color: #e0e0e0;
+		margin: 0 0 0.75rem;
+	}
+
+	.tag-list {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.4rem;
+	}
+
+	.tag {
+		padding: 0.3rem 0.7rem;
+		border-radius: 4px;
+		font-size: 0.8rem;
+		color: #d1d5db;
+	}
+
+	.tag.companion {
+		background: rgba(22, 163, 74, 0.15);
+		border: 1px solid rgba(22, 163, 74, 0.3);
+	}
+
+	.tag.avoid {
+		background: rgba(220, 38, 38, 0.1);
+		border: 1px solid rgba(220, 38, 38, 0.25);
+		color: #fca5a5;
+	}
+
+	.growing-notes,
+	.culinary {
+		margin: 1.5rem 0;
+	}
+
+	.growing-notes h2,
+	.culinary h2 {
+		font-size: 1.1rem;
+		color: #e0e0e0;
+		margin: 0 0 0.75rem;
+	}
+
+	.notes-content p,
+	.culinary p {
+		color: #d1d5db;
+		line-height: 1.7;
+		margin: 0 0 0.75rem;
+	}
+
+	.source-link {
+		margin: 2rem 0 1rem;
+	}
+
+	.source-link a {
+		display: inline-block;
+		color: #4ade80;
+		text-decoration: none;
+		font-size: 0.9rem;
+		padding: 0.5rem 1rem;
+		border: 1px solid rgba(74, 222, 128, 0.3);
+		border-radius: 6px;
+		transition: background 0.15s ease;
+	}
+
+	.source-link a:hover {
+		background: rgba(74, 222, 128, 0.1);
+		text-decoration: none;
+	}
+
+	.nav-links {
+		margin-top: 1.5rem;
 	}
 
 	.back-link {
